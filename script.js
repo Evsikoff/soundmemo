@@ -313,6 +313,7 @@ function checkMatch() {
         setTimeout(() => {
             card1.classList.add('matched');
             card2.classList.add('matched');
+            stopCurrentAudio(); // Stop sound after cards disappear
             gameState.matches++;
             gameState.selectedCards = [];
             gameState.isProcessing = false;
