@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sound Memo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand__title">Sound Memo</span>
+        <span class="brand__subtitle">Найди пары одинаковых звуков</span>
+      </div>
+      <div class="topbar__actions">
+        <button class="ghost" id="menuButton">Меню уровней</button>
+        <button class="primary" id="hintButton">Подсказка</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="level-panel" id="levelPanel">
+        <div>
+          <p class="eyebrow">Текущий уровень</p>
+          <h1 id="levelTitle">Пение птиц</h1>
+          <p class="level-desc" id="levelDescription">Слушай и находи одинаковые звуки.</p>
+        </div>
+        <div class="level-meta">
+          <div class="meta-item">
+            <span>Открыто</span>
+            <strong id="levelProgress">1 / 11</strong>
+          </div>
+          <div class="meta-item">
+            <span>Ходы</span>
+            <strong id="moveCounter">0</strong>
+          </div>
+          <div class="meta-item">
+            <span>Пары</span>
+            <strong id="pairCounter">0 / 8</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="board" id="board"></section>
+    </main>
+  </div>
+
+  <div class="modal hidden" id="adModal">
+    <div class="modal__content">
+      <p class="eyebrow">Реклама Яндекс Игр</p>
+      <h2 id="adTitle">Идёт воспроизведение рекламы…</h2>
+      <p>Пожалуйста, подождите. После окончания мы вернём вас в игру.</p>
+      <div class="loading-bar"><span></span></div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="levelCompleteModal">
+    <div class="modal__content">
+      <p class="eyebrow">Уровень завершён</p>
+      <h2 id="completeTitle">Отличная память!</h2>
+      <div class="stars" id="starRow"></div>
+      <p id="completeSummary"></p>
+      <div class="modal__actions">
+        <button class="ghost" id="restartLevel">Сыграть снова</button>
+        <button class="primary" id="nextLevel">Следующий уровень</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="summaryModal">
+    <div class="modal__content modal__content--wide">
+      <p class="eyebrow">Все уровни пройдены</p>
+      <h2>Ваш результат</h2>
+      <div class="summary-list" id="summaryList"></div>
+      <button class="primary" id="closeSummary">Вернуться в игру</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
