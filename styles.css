@@ -17,6 +17,8 @@
 html, body {
   height: 100%;
   overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: manipulation;
   font-family: "Nunito", sans-serif;
   background: var(--bg);
   color: var(--ink);
@@ -369,4 +371,11 @@ h1 {
 
 .summary-stars span.active {
   background: var(--accent);
+}
+
+/* ── UI loading overlay ──────────────────────────────── */
+
+.app--loading {
+  pointer-events: none;
+  opacity: 0.5;
 }
