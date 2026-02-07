@@ -250,6 +250,7 @@ const nextLevel = document.getElementById("nextLevel");
 const summaryModal = document.getElementById("summaryModal");
 const summaryList = document.getElementById("summaryList");
 const closeSummary = document.getElementById("closeSummary");
+const appEl = document.querySelector(".app");
 
 let currentLevelIndex = 0;
 let currentCards = [];
@@ -260,6 +261,9 @@ let moves = 0;
 let pairsFound = 0;
 let hintsUsed = 0;
 const starsByLevel = new Array(levelData.length).fill(0);
+
+let ysdk = null;
+let player = null;
 
 const shuffle = (array) => {
   const cloned = [...array];
@@ -399,14 +403,63 @@ const renderStars = (count) => {
   }
 };
 
+/* ── Progress persistence ────────────────────────────── */
+
+const saveProgress = async () => {
+  const data = { starsByLevel: [...starsByLevel], currentLevelIndex };
+  try {
+    localStorage.setItem("soundmemo_progress", JSON.stringify(data));
+  } catch (e) { /* ignore */ }
+  try {
+    if (player) await player.setData(data, true);
+  } catch (e) { /* ignore */ }
+};
+
+const loadProgress = async () => {
+  // Cloud saves first
+  try {
+    if (player) {
+      const data = await player.getData(["starsByLevel", "currentLevelIndex"]);
+      if (data && Array.isArray(data.starsByLevel) && data.starsByLevel.length) {
+        data.starsByLevel.forEach((s, i) => {
+          if (i < starsByLevel.length) starsByLevel[i] = s;
+        });
+        if (typeof data.currentLevelIndex === "number") {
+          currentLevelIndex = data.currentLevelIndex;
+        }
+        return;
+      }
+    }
+  } catch (e) { /* ignore */ }
+  // Fallback to localStorage
+  try {
+    const raw = localStorage.getItem("soundmemo_progress");
+    if (raw) {
+      const data = JSON.parse(raw);
+      if (Array.isArray(data.starsByLevel)) {
+        data.starsByLevel.forEach((s, i) => {
+          if (i < starsByLevel.length) starsByLevel[i] = s;
+        });
+      }
+      if (typeof data.currentLevelIndex === "number") {
+        currentLevelIndex = data.currentLevelIndex;
+      }
+    }
+  } catch (e) { /* ignore */ }
+};
+
+/* ── Level lifecycle ─────────────────────────────────── */
+
 const finishLevel = async () => {
   stopCurrentAudio();
   const stars = calculateStars();
   starsByLevel[currentLevelIndex] = Math.max(starsByLevel[currentLevelIndex], stars);
+  await saveProgress();
   completeTitle.textContent = `Вы нашли все пары!`;
   renderStars(stars);
   completeSummary.textContent = `Ходы: ${moves}. Подсказки: ${hintsUsed}.`;
   levelCompleteModal.classList.remove("hidden");
+  ysdk?.features?.GameplayAPI?.stop();
 };
 
 const resetLevelState = () => {
@@ -454,37 +507,7 @@ const removeRandomPair = () => {
   }
 };
 
-hintButton.addEventListener("click", async () => {
-  await showAd("Видео-реклама перед подсказкой");
-  hintsUsed += 1;
-  removeRandomPair();
-});
-
-menuButton.addEventListener("click", () => {
-  renderSummary();
-  summaryModal.classList.remove("hidden");
-});
-
-restartLevel.addEventListener("click", async () => {
-  levelCompleteModal.classList.add("hidden");
-  await showAd("Полноэкранная реклама");
-  loadLevel(currentLevelIndex);
-});
-
-nextLevel.addEventListener("click", async () => {
-  levelCompleteModal.classList.add("hidden");
-  await showAd("Полноэкранная реклама");
-  if (currentLevelIndex < levelData.length - 1) {
-    loadLevel(currentLevelIndex + 1);
-    return;
-  }
-  renderSummary();
-  summaryModal.classList.remove("hidden");
-});
-
-closeSummary.addEventListener("click", () => {
-  summaryModal.classList.add("hidden");
-});
+/* ── Summary / level menu ────────────────────────────── */
 
 const renderSummary = () => {
   summaryList.innerHTML = "";
@@ -511,6 +534,7 @@ const renderSummary = () => {
     action.addEventListener("click", () => {
       summaryModal.classList.add("hidden");
       loadLevel(index);
+      ysdk?.features?.GameplayAPI?.start();
     });
 
     row.appendChild(info);
@@ -520,4 +544,86 @@ const renderSummary = () => {
   });
 };
 
-loadLevel(0);
+/* ── Event listeners ─────────────────────────────────── */
+
+hintButton.addEventListener("click", async () => {
+  await showAd("Видео-реклама перед подсказкой");
+  hintsUsed += 1;
+  removeRandomPair();
+});
+
+menuButton.addEventListener("click", () => {
+  ysdk?.features?.GameplayAPI?.stop();
+  renderSummary();
+  summaryModal.classList.remove("hidden");
+});
+
+restartLevel.addEventListener("click", async () => {
+  levelCompleteModal.classList.add("hidden");
+  await showAd("Полноэкранная реклама");
+  loadLevel(currentLevelIndex);
+  ysdk?.features?.GameplayAPI?.start();
+});
+
+nextLevel.addEventListener("click", async () => {
+  levelCompleteModal.classList.add("hidden");
+  await showAd("Полноэкранная реклама");
+  if (currentLevelIndex < levelData.length - 1) {
+    loadLevel(currentLevelIndex + 1);
+    ysdk?.features?.GameplayAPI?.start();
+    return;
+  }
+  ysdk?.features?.GameplayAPI?.stop();
+  renderSummary();
+  summaryModal.classList.remove("hidden");
+});
+
+closeSummary.addEventListener("click", () => {
+  summaryModal.classList.add("hidden");
+  ysdk?.features?.GameplayAPI?.start();
+});
+
+/* ── Block right-click & context menu ────────────────── */
+
+document.addEventListener("contextmenu", (e) => e.preventDefault());
+document.addEventListener("dragstart", (e) => e.preventDefault());
+
+/* ── App initialization ──────────────────────────────── */
+
+(async () => {
+  appEl.classList.add("app--loading");
+
+  // Initialize Yandex SDK
+  try {
+    ysdk = await YaGames.init();
+  } catch (e) {
+    console.warn("Yandex SDK init failed:", e);
+  }
+
+  // Initialize player
+  try {
+    if (ysdk) {
+      player = await ysdk.getPlayer();
+    }
+  } catch (e) {
+    console.warn("Player init failed:", e);
+  }
+
+  // Load saved progress (cloud first, then localStorage)
+  await loadProgress();
+
+  // Load level from saved progress
+  loadLevel(currentLevelIndex);
+
+  // SDK lifecycle signals
+  try {
+    ysdk?.features?.LoadingAPI?.ready();
+    ysdk?.features?.GameplayAPI?.start();
+  } catch (e) { /* ignore */ }
+
+  const lang = ysdk?.environment?.i18n?.lang || "ru";
+  document.documentElement.lang = lang;
+
+  // Unblock UI
+  appEl.classList.remove("app--loading");
+})();

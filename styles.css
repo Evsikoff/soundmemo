@@ -17,9 +17,14 @@
 html, body {
   height: 100%;
   overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: manipulation;
   font-family: "Nunito", sans-serif;
   background: var(--bg);
   color: var(--ink);
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 body {
@@ -369,4 +374,17 @@ h1 {
 
 .summary-stars span.active {
   background: var(--accent);
+}
+
+/* ── UI loading overlay ──────────────────────────────── */
+
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+.app--loading {
+  pointer-events: none;
+  opacity: 0.5;
 }
