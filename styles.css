@@ -114,7 +114,10 @@ main {
 .level-meta {
   display: flex;
   gap: 12px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  flex-direction: row-reverse;
+  align-content: stretch;
+  align-items: flex-start;
 }
 
 .meta-item {
