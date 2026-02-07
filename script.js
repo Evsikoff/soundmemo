@@ -332,6 +332,10 @@ const highlightCard = (index) => {
 };
 
 const removePair = (firstIndex, secondIndex) => {
+  stopCurrentAudio();
+  highlightCard(null);
+  lastSound = null;
+  lastCardIndex = null;
   [firstIndex, secondIndex].forEach((idx) => {
     currentCards[idx].removed = true;
     const cardEl = board.querySelector(`.card[data-index='${idx}']`);
