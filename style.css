@@ -1,0 +1,217 @@
+:root {
+    --bg-color: #fdf5e6;
+    --card-bg: #fff;
+    --accent-color: #b0e0e6;
+    --text-color: #5d4037;
+    --pastel-pink: #ffd1dc;
+    --pastel-blue: #aec6cf;
+    --pastel-green: #77dd77;
+    --pastel-yellow: #fdfd96;
+    --pastel-purple: #b39eb5;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    transition: background-color 0.5s ease;
+}
+
+body.level-theme-birds { background-color: #f0fff0; }
+body.level-theme-instruments { background-color: #f5f0ff; }
+body.level-theme-industrial { background-color: #f0f5f5; }
+body.level-theme-office { background-color: #fcfcfc; }
+body.level-theme-horn { background-color: #fff5f0; }
+body.level-theme-loudspeaker { background-color: #f0f0ff; }
+body.level-theme-piano { background-color: #fffafa; }
+body.level-theme-splash { background-color: #f0faff; }
+body.level-theme-whistle { background-color: #f5fff0; }
+body.level-theme-engine { background-color: #fff9f0; }
+
+#app {
+    width: 100%;
+    max-width: 600px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.hidden {
+    display: none !important;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Menu Screen */
+.level-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    width: 100%;
+    overflow-y: auto;
+}
+
+.level-card {
+    background-color: var(--card-bg);
+    border-radius: 15px;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: transform 0.2s;
+    text-align: center;
+}
+
+.level-card:hover {
+    transform: translateY(-5px);
+}
+
+.level-card img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.level-card .stars {
+    color: #ffca28;
+    font-size: 1.2rem;
+}
+
+/* Game Screen */
+.game-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#level-title {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.grid-4x4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 10px;
+    width: 100%;
+    aspect-ratio: 1/1;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    cursor: pointer;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+}
+
+.card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+}
+
+.card.selected {
+    outline: 4px solid var(--pastel-blue);
+    transform: scale(0.95);
+}
+
+.card.matched {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+}
+
+/* Modal */
+.modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.stars {
+    font-size: 2.5rem;
+    margin: 20px 0;
+}
+
+.star.active {
+    color: #ffca28;
+}
+
+.star {
+    color: #ccc;
+}
+
+button {
+    background-color: var(--pastel-blue);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    filter: brightness(0.9);
+}
+
+#hint-button {
+    background-color: var(--pastel-purple);
+}
+
+/* Results Screen */
+#final-stats {
+    width: 100%;
+    margin-bottom: 30px;
+    overflow-y: auto;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px dashed #ccc;
+}
