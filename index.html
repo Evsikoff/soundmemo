@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Звуковое Мемо</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Yandex Games SDK -->
+    <script src="https://yandex.ru/games/sdk/v2"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Main Menu -->
+        <section id="menu-screen" class="screen">
+            <h1>Звуковое Мемо</h1>
+            <div class="level-list" id="level-list">
+                <!-- Levels will be injected here -->
+            </div>
+        </section>
+
+        <!-- Game Screen -->
+        <section id="game-screen" class="screen hidden">
+            <div class="game-header">
+                <button id="back-to-menu">⬅ Назад</button>
+                <div id="level-title">Уровень</div>
+                <button id="hint-button">Подсказка (Видео)</button>
+            </div>
+            <div id="grid-container" class="grid-4x4">
+                <!-- Cards will be injected here -->
+            </div>
+            <div class="game-footer">
+                <div id="move-count">Ходы: 0</div>
+            </div>
+        </section>
+
+        <!-- Level End Modal -->
+        <div id="level-end-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="modal-title">Уровень пройден!</h2>
+                <div id="star-rating" class="stars">
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                </div>
+                <div class="modal-buttons">
+                    <button id="replay-button">Заново</button>
+                    <button id="next-button">Следующий уровень</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final Results Screen -->
+        <section id="results-screen" class="screen hidden">
+            <h1>Все уровни пройдены!</h1>
+            <div id="final-stats">
+                <!-- List of levels and stars -->
+            </div>
+            <button id="back-to-start">К началу</button>
+        </section>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
