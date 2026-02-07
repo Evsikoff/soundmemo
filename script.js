@@ -583,6 +583,11 @@ closeSummary.addEventListener("click", () => {
   ysdk?.features?.GameplayAPI?.start();
 });
 
+/* ── Block right-click & context menu ────────────────── */
+
+document.addEventListener("contextmenu", (e) => e.preventDefault());
+document.addEventListener("dragstart", (e) => e.preventDefault());
+
 /* ── App initialization ──────────────────────────────── */
 
 (async () => {
