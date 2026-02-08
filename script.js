@@ -375,12 +375,62 @@ const handleCardClick = (index) => {
   lastCardIndex = index;
 };
 
-const showAd = async (title) => {
-  adModal.classList.remove("hidden");
-  document.getElementById("adTitle").textContent = title;
-  await wait(2000);
-  adModal.classList.add("hidden");
-};
+const showRewardedAd = () =>
+  new Promise((resolve) => {
+    if (!ysdk) {
+      resolve(true);
+      return;
+    }
+    stopCurrentAudio();
+    adModal.classList.remove("hidden");
+    document.getElementById("adTitle").textContent =
+      "Загрузка видео-рекламы…";
+    let rewarded = false;
+    ysdk.adv.showRewardedVideo({
+      callbacks: {
+        onOpen: () => {
+          adModal.classList.add("hidden");
+        },
+        onRewarded: () => {
+          rewarded = true;
+        },
+        onClose: () => {
+          adModal.classList.add("hidden");
+          resolve(rewarded);
+        },
+        onError: (e) => {
+          console.warn("Rewarded ad error:", e);
+          adModal.classList.add("hidden");
+          resolve(false);
+        },
+      },
+    });
+  });
+
+const showFullscreenAd = () =>
+  new Promise((resolve) => {
+    if (!ysdk) {
+      resolve();
+      return;
+    }
+    stopCurrentAudio();
+    adModal.classList.remove("hidden");
+    document.getElementById("adTitle").textContent =
+      "Идёт воспроизведение рекламы…";
+    ysdk.adv.showFullscreenAdv({
+      callbacks: {
+        onClose: (wasShown) => {
+          adModal.classList.add("hidden");
+          resolve();
+        },
+        onError: (e) => {
+          console.warn("Fullscreen ad error:", e);
+          adModal.classList.add("hidden");
+          resolve();
+        },
+      },
+    });
+  });
 
 const calculateStars = () => {
   let stars = 5;
@@ -547,9 +597,11 @@ const renderSummary = () => {
 /* ── Event listeners ─────────────────────────────────── */
 
 hintButton.addEventListener("click", async () => {
-  await showAd("Видео-реклама перед подсказкой");
-  hintsUsed += 1;
-  removeRandomPair();
+  const rewarded = await showRewardedAd();
+  if (rewarded) {
+    hintsUsed += 1;
+    removeRandomPair();
+  }
 });
 
 menuButton.addEventListener("click", () => {
@@ -560,14 +612,14 @@ menuButton.addEventListener("click", () => {
 
 restartLevel.addEventListener("click", async () => {
   levelCompleteModal.classList.add("hidden");
-  await showAd("Полноэкранная реклама");
+  await showFullscreenAd();
   loadLevel(currentLevelIndex);
   ysdk?.features?.GameplayAPI?.start();
 });
 
 nextLevel.addEventListener("click", async () => {
   levelCompleteModal.classList.add("hidden");
-  await showAd("Полноэкранная реклама");
+  await showFullscreenAd();
   if (currentLevelIndex < levelData.length - 1) {
     loadLevel(currentLevelIndex + 1);
     ysdk?.features?.GameplayAPI?.start();
